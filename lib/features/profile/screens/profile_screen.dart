@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:humo_kids/core/api/token_storage.dart';
 import 'package:humo_kids/core/constants/app_colors.dart';
 import 'package:humo_kids/features/home/screens/activities_schedule_screen.dart';
 import 'package:humo_kids/features/home/screens/daily_report_screen.dart';
@@ -23,6 +24,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   bool _notificationsEnabled = true;
   bool _faceIdEnabled = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    final name = await TokenStorage.getUserName();
+    final phone = await TokenStorage.getUserPhone();
+    if (mounted) {
+      setState(() {
+        if (name != null && name.isNotEmpty) _userName = name;
+        if (phone != null && phone.isNotEmpty) _userPhone = phone;
+      });
+    }
+  }
 
   void _editProfile() {
     final nameController = TextEditingController(text: _userName);
@@ -132,19 +150,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (nameController.text.trim().isNotEmpty) {
-                    setState(() {
-                      _userName = nameController.text.trim();
-                      _userPhone = phoneController.text.trim();
-                    });
-                    Navigator.pop(ctx);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Profil ma'lumotlari yangilandi!"),
-                        backgroundColor: Color(0xFF16A34A),
-                      ),
+                    final newName = nameController.text.trim();
+                    final newPhone = phoneController.text.trim();
+                    await TokenStorage.saveUserData(
+                      name: newName,
+                      phone: newPhone,
                     );
+                    if (ctx.mounted) {
+                      Navigator.pop(ctx);
+                    }
+                    if (mounted) {
+                      setState(() {
+                        _userName = newName;
+                        _userPhone = newPhone;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Profil ma'lumotlari yangilandi!"),
+                          backgroundColor: Color(0xFF16A34A),
+                        ),
+                      );
+                    }
                   }
                 },
                 style: ElevatedButton.styleFrom(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:humo_kids/core/api/token_storage.dart';
 import 'package:humo_kids/core/constants/app_colors.dart';
 import 'package:humo_kids/shared/widgets/humo_logo.dart';
 import 'package:humo_kids/features/home/screens/daily_report_screen.dart';
@@ -18,8 +19,54 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedChildIndex = 0; // 0: Amirbek, 1: Yasmina
+  String _userName = '';
 
   bool get _isAmirbek => _selectedChildIndex == 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final name = await TokenStorage.getUserName();
+    if (mounted && name != null && name.isNotEmpty) {
+      setState(() => _userName = name.split(' ').first);
+    }
+  }
+
+  String get _todayFormattedDate {
+    final now = DateTime.now();
+    const weekdays = [
+      'Dushanba',
+      'Seshanba',
+      'Chorshanba',
+      'Payshanba',
+      'Juma',
+      'Shanba',
+      'Yakshanba',
+    ];
+    const months = [
+      'yanvar',
+      'fevral',
+      'mart',
+      'aprel',
+      'may',
+      'iyun',
+      'iyul',
+      'avgust',
+      'sentabr',
+      'oktabr',
+      'noyabr',
+      'dekabr',
+    ];
+    final weekday = weekdays[now.weekday - 1];
+    final month = months[now.month - 1];
+    final hh = now.hour.toString().padLeft(2, '0');
+    final mm = now.minute.toString().padLeft(2, '0');
+    return '$weekday, ${now.day}-$month ${now.year} · $hh:$mm';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,9 +140,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 18),
 
                   // Greeting & Date
-                  const Text(
-                    "Assalomu alaykum, Dilnoza!",
-                    style: TextStyle(
+                  Text(
+                    _userName.isNotEmpty
+                        ? "Assalomu alaykum, $_userName!"
+                        : "Assalomu alaykum!",
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w800,
                       color: AppColors.darkText,
@@ -103,9 +152,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
-                    "Juma, 23-oktabr 2026 · 14:30",
-                    style: TextStyle(
+                  Text(
+                    _todayFormattedDate,
+                    style: const TextStyle(
                       fontSize: 13,
                       color: AppColors.grayText,
                     ),

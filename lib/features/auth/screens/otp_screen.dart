@@ -73,8 +73,9 @@ class _OtpScreenState extends State<OtpScreen> {
   String get _maskedPhone {
     final raw = widget.phone.replaceAll(RegExp(r'\D'), '');
     if (raw.length >= 9) {
+      final op = raw.substring(raw.length - 9, raw.length - 7);
       final last2 = raw.substring(raw.length - 2);
-      return '+998 90 ••• •• $last2';
+      return '+998 $op ••• •• $last2';
     }
     return widget.phone.isNotEmpty ? widget.phone : '+998 90 ••• •• 67';
   }
