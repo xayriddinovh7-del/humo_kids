@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:humo_kids/core/constants/app_colors.dart';
 import 'package:humo_kids/features/messages/screens/chat_screen.dart';
 
@@ -74,9 +75,16 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final unreadContacts =
-        _contacts.where((c) => c.unread > 0).toList();
-    final displayList = _selectedFilter == 0 ? _contacts : unreadContacts;
+    final query = _searchController.text.trim().toLowerCase();
+    final displayList = _contacts.where((c) {
+      final matchesFilter = _selectedFilter == 0 || c.unread > 0;
+      if (!matchesFilter) return false;
+      if (query.isEmpty) return true;
+      return c.name.toLowerCase().contains(query) ||
+          c.role.toLowerCase().contains(query) ||
+          c.lastMessage.toLowerCase().contains(query);
+    }).toList();
+    final totalUnread = _contacts.where((c) => c.unread > 0).length;
 
     return SafeArea(
       child: Center(
@@ -119,21 +127,35 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       ),
                       child: TextField(
                         controller: _searchController,
+                        onChanged: (_) => setState(() {}),
                         style: const TextStyle(fontSize: 14),
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: "Xabar yoki ism bo'yicha qidirish",
-                          hintStyle: TextStyle(
+                          hintStyle: const TextStyle(
                             color: AppColors.grayText,
                             fontSize: 13,
                           ),
-                          prefixIcon: Icon(
+                          prefixIcon: const Icon(
                             Icons.search_rounded,
                             color: AppColors.grayText,
                             size: 20,
                           ),
+                          suffixIcon: _searchController.text.isNotEmpty
+                              ? GestureDetector(
+                                  onTap: () {
+                                    _searchController.clear();
+                                    setState(() {});
+                                  },
+                                  child: const Icon(
+                                    Icons.close_rounded,
+                                    color: AppColors.grayText,
+                                    size: 18,
+                                  ),
+                                )
+                              : null,
                           border: InputBorder.none,
-                          contentPadding:
-                              EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
                         ),
                       ),
                     ),
@@ -146,14 +168,24 @@ class _MessagesScreenState extends State<MessagesScreen> {
                           label: 'Barchasi',
                           isSelected: _selectedFilter == 0,
                           badge: null,
-                          onTap: () => setState(() => _selectedFilter = 0),
+                          onTap: () {
+                            if (_selectedFilter != 0) {
+                              HapticFeedback.selectionClick();
+                              setState(() => _selectedFilter = 0);
+                            }
+                          },
                         ),
                         const SizedBox(width: 8),
                         _FilterPill(
                           label: "O'qilmagan",
                           isSelected: _selectedFilter == 1,
-                          badge: unreadContacts.length,
-                          onTap: () => setState(() => _selectedFilter = 1),
+                          badge: totalUnread,
+                          onTap: () {
+                            if (_selectedFilter != 1) {
+                              HapticFeedback.selectionClick();
+                              setState(() => _selectedFilter = 1);
+                            }
+                          },
                         ),
                       ],
                     ),
@@ -164,51 +196,93 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
               // Chat List
               Expanded(
-                child: ListView.builder(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: displayList.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == displayList.length) {
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 16, bottom: 20),
-                        child: Center(
-                          child: Text(
-                            "Shaxsiy suhbatlarni faqat siz va suhbatdoshingiz ko'radi.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: AppColors.grayText.withOpacity(0.7),
-                            ),
+                child: displayList.isEmpty
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 56,
+                                height: 56,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFF1F5F9),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.chat_bubble_outline_rounded,
+                                  color: AppColors.grayText,
+                                  size: 28,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              const Text(
+                                "Suhbatlar topilmadi",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.darkText,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              const Text(
+                                "Qidiruv so'zini tekshiring yoki filtrni o'zgartiring.",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.grayText,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      );
-                    }
-                    final contact = displayList[index];
-                    return _ChatListItem(
-                      contact: contact,
-                      onTap: () {
-                        if (contact.initials == 'MK') {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const ChatScreen(),
-                            ),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 0),
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: displayList.length + 1,
+                        itemBuilder: (context, index) {
+                          if (index == displayList.length) {
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 16, bottom: 20),
+                              child: Center(
+                                child: Text(
+                                  "Shaxsiy suhbatlarni faqat siz va suhbatdoshingiz ko'radi.",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: AppColors.grayText
+                                        .withValues(alpha: 0.7),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                          final contact = displayList[index];
+                          return _ChatListItem(
+                            contact: contact,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ChatScreen(
+                                    name: contact.name,
+                                    role: contact.role,
+                                    subject: contact.initials == 'HK'
+                                        ? "E'lonlar va yangiliklar"
+                                        : (contact.initials == 'Y'
+                                            ? "Yordam markazi"
+                                            : "${contact.name} bilan suhbat"),
+                                  ),
+                                ),
+                              );
+                            },
                           );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                  "${contact.name} bilan suhbat ochilmoqda..."),
-                              duration: const Duration(seconds: 1),
-                            ),
-                          );
-                        }
-                      },
-                    );
-                  },
-                ),
+                        },
+                      ),
               ),
             ],
           ),
@@ -282,7 +356,7 @@ class _FilterPill extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? Colors.white.withOpacity(0.3)
+                      ? Colors.white.withValues(alpha: 0.3)
                       : const Color(0xFFD97706),
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -325,7 +399,7 @@ class _ChatListItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
             color: hasUnread
-                ? const Color(0xFF2D63E2).withOpacity(0.18)
+                ? const Color(0xFF2D63E2).withValues(alpha: 0.18)
                 : const Color(0xFFEDF2F7),
           ),
         ),

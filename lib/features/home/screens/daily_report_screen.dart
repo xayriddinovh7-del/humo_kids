@@ -3,8 +3,9 @@ import 'package:humo_kids/core/constants/app_colors.dart';
 import 'package:humo_kids/features/home/screens/food_details_screen.dart';
 import 'package:humo_kids/features/home/screens/activities_schedule_screen.dart';
 import 'package:humo_kids/features/home/screens/moments_gallery_screen.dart';
+import 'package:humo_kids/features/messages/screens/chat_screen.dart';
 
-class DailyReportScreen extends StatelessWidget {
+class DailyReportScreen extends StatefulWidget {
   const DailyReportScreen({
     super.key,
     this.childName = 'Amirbek',
@@ -15,7 +16,75 @@ class DailyReportScreen extends StatelessWidget {
   final String group;
 
   @override
+  State<DailyReportScreen> createState() => _DailyReportScreenState();
+}
+
+class _DailyReportScreenState extends State<DailyReportScreen> {
+  DateTime _selectedDate = DateTime(2026, 10, 23);
+
+  String get childName => widget.childName;
+  String get group => widget.group;
+
+  String _formatDateUz(DateTime date) {
+    const months = [
+      'yanvar',
+      'fevral',
+      'mart',
+      'aprel',
+      'may',
+      'iyun',
+      'iyul',
+      'avgust',
+      'sentabr',
+      'oktabr',
+      'noyabr',
+      'dekabr'
+    ];
+    const weekdays = [
+      'dushanba',
+      'seshanba',
+      'chorshanba',
+      'payshanba',
+      'juma',
+      'shanba',
+      'yakshanba'
+    ];
+    return "${date.day}-${months[date.month - 1]}, ${weekdays[date.weekday - 1]}";
+  }
+
+  String _formatDateShort(DateTime date) {
+    return "${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year}";
+  }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppColors.primary,
+              onPrimary: Colors.white,
+              onSurface: AppColors.darkText,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() => _selectedDate = picked);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isToday = _selectedDate.year == 2026 &&
+        _selectedDate.month == 10 &&
+        _selectedDate.day == 23;
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -67,7 +136,7 @@ class DailyReportScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          '$childName · $group',
+                          '${widget.childName} · ${widget.group}',
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -75,9 +144,9 @@ class DailyReportScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Text(
-                        '23.10.2026',
-                        style: TextStyle(
+                      Text(
+                        _formatDateShort(_selectedDate),
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.grayText,
                           fontWeight: FontWeight.w500,
@@ -90,27 +159,86 @@ class DailyReportScreen extends StatelessWidget {
                   // Date navigator card
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
+                        horizontal: 14, vertical: 10),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: const Color(0xFFE2E8F0)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.02),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Icon(Icons.chevron_left,
-                            color: AppColors.primary, size: 22),
-                        const Text(
-                          '23-oktabr, juma',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.darkText,
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () {
+                            setState(() {
+                              _selectedDate =
+                                  _selectedDate.subtract(const Duration(days: 1));
+                            });
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 4, vertical: 4),
+                            child: Icon(Icons.chevron_left_rounded,
+                                color: AppColors.primary, size: 26),
                           ),
                         ),
-                        const Icon(Icons.calendar_today_outlined,
-                            color: AppColors.primary, size: 18),
+                        Expanded(
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: _pickDate,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              child: Text(
+                                _formatDateUz(_selectedDate),
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.darkText,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () {
+                                setState(() {
+                                  _selectedDate =
+                                      _selectedDate.add(const Duration(days: 1));
+                                });
+                              },
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 4, vertical: 4),
+                                child: Icon(Icons.chevron_right_rounded,
+                                    color: AppColors.primary, size: 26),
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: _pickDate,
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 4, vertical: 4),
+                                child: Icon(Icons.calendar_today_outlined,
+                                    color: AppColors.primary, size: 20),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -121,15 +249,21 @@ class DailyReportScreen extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEFF6FF),
+                      color: isToday
+                          ? const Color(0xFFEFF6FF)
+                          : const Color(0xFFF1F5F9),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Text(
-                      '14:30 da yangilandi',
+                    child: Text(
+                      isToday
+                          ? '14:30 da yangilandi'
+                          : "${_formatDateShort(_selectedDate)} hisoboti",
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.primary,
+                        color: isToday
+                            ? AppColors.primary
+                            : AppColors.grayText,
                       ),
                     ),
                   ),
@@ -214,6 +348,72 @@ class DailyReportScreen extends StatelessWidget {
                     description:
                         '12:45–14:15 · 1 soat 30 daqiqa. Tinch uxladi va tetik uyg\'ondi.',
                     isLast: true,
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                          contentPadding: const EdgeInsets.all(22),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 52,
+                                height: 52,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFEFF6FF),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.nightlight_round_outlined,
+                                  color: AppColors.primary,
+                                  size: 26,
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                              const Text(
+                                "Kunduzgi uyqu tafsiloti",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.darkText,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "$childName 12:45 da o'rniga yotdi va 14:15 da uyg'ondi. Jami: 1 soat 30 daqiqa.\n\nUyqu sifati: A'lo darajada, bezovtalanmadi.",
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.grayText,
+                                  height: 1.45,
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () => Navigator.pop(ctx),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primary,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12),
+                                  ),
+                                  child: const Text("Tushunarli",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w700)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 20),
 
@@ -281,6 +481,47 @@ class DailyReportScreen extends StatelessWidget {
                             height: 1.45,
                           ),
                         ),
+                        const SizedBox(height: 12),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const ChatScreen(
+                                  name: 'Mohira Karimova',
+                                  role: '1-guruh tarbiyachisi',
+                                  subject: 'Hisobot bo\'yicha suhbat',
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              border:
+                                  Border.all(color: const Color(0xFFBBF7D0)),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: const [
+                                Icon(Icons.chat_bubble_outline_rounded,
+                                    size: 15, color: Color(0xFF16A34A)),
+                                SizedBox(width: 6),
+                                Text(
+                                  "Tarbiyachiga javob yozish →",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF16A34A),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -290,14 +531,17 @@ class DailyReportScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Bugungi suratlar',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.darkText,
+                      const Flexible(
+                        child: Text(
+                          'Bugungi suratlar',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.darkText,
+                          ),
                         ),
                       ),
+                      const SizedBox(width: 8),
                       GestureDetector(
                         onTap: () {
                           Navigator.push(

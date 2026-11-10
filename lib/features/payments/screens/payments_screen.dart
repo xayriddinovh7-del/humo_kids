@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:humo_kids/core/constants/app_colors.dart';
 import 'package:humo_kids/features/payments/screens/my_cards_screen.dart';
 import 'package:humo_kids/features/payments/screens/payment_error_screen.dart';
@@ -53,14 +54,24 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                         child: _PaymentChildTab(
                           name: 'Amirbek',
                           isSelected: _isAmirbek,
-                          onTap: () => setState(() => _selectedChild = 0),
+                          onTap: () {
+                            if (!_isAmirbek) {
+                              HapticFeedback.selectionClick();
+                              setState(() => _selectedChild = 0);
+                            }
+                          },
                         ),
                       ),
                       Expanded(
                         child: _PaymentChildTab(
                           name: 'Yasmina',
                           isSelected: !_isAmirbek,
-                          onTap: () => setState(() => _selectedChild = 1),
+                          onTap: () {
+                            if (_isAmirbek) {
+                              HapticFeedback.selectionClick();
+                              setState(() => _selectedChild = 1);
+                            }
+                          },
                         ),
                       ),
                     ],
@@ -91,7 +102,9 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                           ),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: _isAmirbek
                                   ? const Color(0xFFFFF3D6)
@@ -99,9 +112,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
-                              _isAmirbek
-                                  ? "To'lov kutilmoqda"
-                                  : "To'langan",
+                              _isAmirbek ? "To'lov kutilmoqda" : "To'langan",
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
@@ -160,24 +171,40 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: const [
-                          Text("Bog'cha xizmati",
-                              style: TextStyle(color: AppColors.grayText)),
-                          Text("500 000 so'm",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.darkText)),
+                          Flexible(
+                            child: Text(
+                              "Bog'cha xizmati",
+                              style: TextStyle(color: AppColors.grayText),
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            "500 000 so'm",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.darkText,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 8),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: const [
-                          Text("Ovqatlanish",
-                              style: TextStyle(color: AppColors.grayText)),
-                          Text("100 000 so'm",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.darkText)),
+                          Flexible(
+                            child: Text(
+                              "Ovqatlanish",
+                              style: TextStyle(color: AppColors.grayText),
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            "100 000 so'm",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.darkText,
+                            ),
+                          ),
                         ],
                       ),
                       const Padding(
@@ -187,16 +214,22 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: const [
-                          Text("Jami",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                  color: AppColors.darkText,
-                                  fontSize: 15)),
-                          Text("600 000 so'm",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                  color: AppColors.darkText,
-                                  fontSize: 15)),
+                          Text(
+                            "Jami",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.darkText,
+                              fontSize: 15,
+                            ),
+                          ),
+                          Text(
+                            "600 000 so'm",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.darkText,
+                              fontSize: 15,
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -224,10 +257,14 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                           height: 50,
                           child: ElevatedButton(
                             onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content:
-                                        Text("Payme xizmati ulanmoqda...")),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const MyCardsScreen(
+                                    amount: "600 000 so'm",
+                                    month: "Oktabr uchun",
+                                  ),
+                                ),
                               );
                             },
                             style: ElevatedButton.styleFrom(
@@ -253,10 +290,14 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                           height: 50,
                           child: ElevatedButton(
                             onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content:
-                                        Text("Click xizmati ulanmoqda...")),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const MyCardsScreen(
+                                    amount: "600 000 so'm",
+                                    month: "Oktabr uchun",
+                                  ),
+                                ),
                               );
                             },
                             style: ElevatedButton.styleFrom(
@@ -306,8 +347,11 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                               color: const Color(0xFFEFF6FF),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Icon(Icons.credit_card_rounded,
-                                color: AppColors.primary, size: 24),
+                            child: const Icon(
+                              Icons.credit_card_rounded,
+                              color: AppColors.primary,
+                              size: 24,
+                            ),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
@@ -333,8 +377,11 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                               ],
                             ),
                           ),
-                          const Icon(Icons.arrow_forward_rounded,
-                              color: AppColors.grayText, size: 20),
+                          const Icon(
+                            Icons.arrow_forward_rounded,
+                            color: AppColors.grayText,
+                            size: 20,
+                          ),
                         ],
                       ),
                     ),
@@ -344,15 +391,20 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                   // Security note
                   Row(
                     children: const [
-                      Icon(Icons.verified_user_outlined,
-                          color: Color(0xFF16A34A), size: 16),
+                      Icon(
+                        Icons.verified_user_outlined,
+                        color: Color(0xFF16A34A),
+                        size: 16,
+                      ),
                       SizedBox(width: 6),
-                      Text(
-                        "To'lov himoyalangan. Komissiya: 0 so'm.",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.grayText,
-                          fontWeight: FontWeight.w500,
+                      Flexible(
+                        child: Text(
+                          "To'lov himoyalangan. Komissiya: 0 so'm.",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.grayText,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ],
@@ -364,14 +416,17 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      "To'lovlar tarixi",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.darkText,
+                    const Flexible(
+                      child: Text(
+                        "To'lovlar tarixi",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.darkText,
+                        ),
                       ),
                     ),
+                    const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -412,7 +467,7 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                       border: Border.all(color: const Color(0xFFEDF2F7)),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.02),
+                          color: Colors.black.withValues(alpha: 0.02),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -430,8 +485,11 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                                 color: const Color(0xFFE8F8EE),
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: const Icon(Icons.receipt_long_rounded,
-                                  color: Color(0xFF16A34A), size: 22),
+                              child: const Icon(
+                                Icons.receipt_long_rounded,
+                                color: Color(0xFF16A34A),
+                                size: 22,
+                              ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -457,14 +515,19 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                                 ],
                               ),
                             ),
-                            const Icon(Icons.chevron_right,
-                                color: AppColors.grayText, size: 20),
+                            const Icon(
+                              Icons.chevron_right,
+                              color: AppColors.grayText,
+                              size: 20,
+                            ),
                           ],
                         ),
                         const SizedBox(height: 12),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFE8F8EE),
                             borderRadius: BorderRadius.circular(10),
@@ -496,7 +559,9 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 10),
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFFF1F2),
                       borderRadius: BorderRadius.circular(14),
@@ -504,8 +569,11 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                     ),
                     child: Row(
                       children: const [
-                        Icon(Icons.info_outline_rounded,
-                            size: 18, color: Color(0xFFE11D48)),
+                        Icon(
+                          Icons.info_outline_rounded,
+                          size: 18,
+                          color: Color(0xFFE11D48),
+                        ),
                         SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -517,8 +585,11 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
                             ),
                           ),
                         ),
-                        Icon(Icons.arrow_forward_ios_rounded,
-                            size: 12, color: Color(0xFFBE123C)),
+                        Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 12,
+                          color: Color(0xFFBE123C),
+                        ),
                       ],
                     ),
                   ),
@@ -576,4 +647,3 @@ class _PaymentChildTab extends StatelessWidget {
     );
   }
 }
-

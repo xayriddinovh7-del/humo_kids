@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:humo_kids/core/constants/app_colors.dart';
+import 'package:humo_kids/features/home/screens/activities_schedule_screen.dart';
+import 'package:humo_kids/features/home/screens/daily_report_screen.dart';
+import 'package:humo_kids/features/home/screens/food_details_screen.dart';
+import 'package:humo_kids/features/messages/screens/chat_screen.dart';
+import 'package:humo_kids/features/notifications/screens/notifications_screen.dart';
 import 'package:humo_kids/features/onboarding/screens/welcome_screen.dart';
 import 'package:humo_kids/features/security/screens/create_pin_screen.dart';
-import 'package:humo_kids/features/security/screens/pin_login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -12,8 +17,688 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String _userName = "Dilnoza Abdullayeva";
+  String _userPhone = "+998 90 123 45 67";
+  String _selectedLanguage = "O'zbekcha";
+
   bool _notificationsEnabled = true;
   bool _faceIdEnabled = true;
+
+  void _editProfile() {
+    final nameController = TextEditingController(text: _userName);
+    final phoneController = TextEditingController(text: _userPhone);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(ctx).size.height * 0.85,
+          ),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.fromLTRB(
+              24,
+              20,
+              24,
+              MediaQuery.of(ctx).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE2E8F0),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Ma'lumotlarni tahrirlash",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.darkText,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close_rounded,
+                      color: AppColors.grayText),
+                  onPressed: () => Navigator.pop(ctx),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              "F.I.SH.",
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 6),
+            TextField(
+              controller: nameController,
+              textCapitalization: TextCapitalization.words,
+              textInputAction: TextInputAction.next,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: const Color(0xFFF8FAFC),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
+            const Text(
+              "Telefon raqam",
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 6),
+            TextField(
+              controller: phoneController,
+              keyboardType: TextInputType.phone,
+              textInputAction: TextInputAction.done,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: const Color(0xFFF8FAFC),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  if (nameController.text.trim().isNotEmpty) {
+                    setState(() {
+                      _userName = nameController.text.trim();
+                      _userPhone = phoneController.text.trim();
+                    });
+                    Navigator.pop(ctx);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Profil ma'lumotlari yangilandi!"),
+                        backgroundColor: Color(0xFF16A34A),
+                      ),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  "Saqlash",
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  ),
+);
+  }
+
+  void _showChildDetails({
+    required String name,
+    required String group,
+    required String age,
+    required String teacher,
+    required String attendance,
+    required Color color,
+    required String initial,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(ctx).size.height * 0.85,
+          ),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE2E8F0),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 26,
+                  backgroundColor: color.withValues(alpha: 0.15),
+                  child: Text(
+                    initial,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: color,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.darkText,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        "$age · $group",
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColors.grayText,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close_rounded,
+                      color: AppColors.grayText),
+                  onPressed: () => Navigator.pop(ctx),
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFEDF2F7)),
+              ),
+              child: Column(
+                children: [
+                  _infoRow("Tarbiyachi:", teacher),
+                  const Divider(height: 16),
+                  _infoRow("Oylik davomat:", attendance),
+                  const Divider(height: 16),
+                  _infoRow("Salomatlik holati:", "Allergiya qayd etilmagan"),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              "Tezkor amallar",
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 10),
+            _actionButton(
+              icon: Icons.assignment_outlined,
+              label: "Kunlik hisobotni ko'rish",
+              onTap: () {
+                Navigator.pop(ctx);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => DailyReportScreen(
+                      childName: name,
+                      group: group,
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            _actionButton(
+              icon: Icons.event_note_outlined,
+              label: "Mashg'ulotlar jadvali",
+              onTap: () {
+                Navigator.pop(ctx);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ActivitiesScheduleScreen(
+                      childName: name,
+                      group: group,
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            _actionButton(
+              icon: Icons.restaurant_menu_outlined,
+              label: "Bugungi taomnoma",
+              onTap: () {
+                Navigator.pop(ctx);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => FoodDetailsScreen(
+                      childName: name,
+                      group: group,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    ),
+  ),
+);
+  }
+
+  Widget _infoRow(String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label,
+            style: const TextStyle(fontSize: 13, color: AppColors.grayText)),
+        Text(value,
+            style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: AppColors.darkText)),
+      ],
+    );
+  }
+
+  Widget _actionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEFF6FF),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: AppColors.primary, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primary,
+                ),
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded,
+                color: AppColors.primary, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _chooseLanguage() {
+    final languages = [
+      "O'zbekcha",
+      "Ўзбекча (Кирилл)",
+      "Русский",
+      "English",
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(ctx).size.height * 0.85,
+          ),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE2E8F0),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                const Text(
+                  "Ilova tilini tanlang",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.darkText,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                ...languages.map(
+                  (lang) {
+                    final isSelected = _selectedLanguage == lang;
+                    return ListTile(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      tileColor:
+                          isSelected ? const Color(0xFFEFF6FF) : Colors.transparent,
+                      title: Text(
+                        lang,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight:
+                              isSelected ? FontWeight.w800 : FontWeight.w600,
+                          color:
+                              isSelected ? AppColors.primary : AppColors.darkText,
+                        ),
+                      ),
+                      trailing: isSelected
+                          ? const Icon(Icons.check_rounded,
+                              color: AppColors.primary)
+                          : null,
+                      onTap: () {
+                        setState(() => _selectedLanguage = lang);
+                        Navigator.pop(ctx);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Ilova tili o'zgartirildi: $lang"),
+                            duration: const Duration(seconds: 1),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showSupport() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(ctx).size.height * 0.85,
+          ),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEFF6FF),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.headset_mic_outlined,
+                        color: AppColors.primary, size: 24),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Center(
+                  child: Text(
+                    "Qo'llab-quvvatlash xizmati",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.darkText,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                const Center(
+                  child: Text(
+                    "Savollaringiz bormi? Biz sizga yordam berishdan mamnunmiz.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 13, color: AppColors.grayText),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ListTile(
+                  leading: const Icon(Icons.phone_rounded,
+                      color: Color(0xFF16A34A)),
+                  title: const Text("Bog'cha ma'muriyati",
+                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                  subtitle: const Text("+998 71 200 42 42 (08:00 - 18:00)",
+                      style: TextStyle(fontSize: 12)),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                  tileColor: const Color(0xFFF8FAFC),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("+998 71 200 42 42 raqamiga qo'ng'iroq qilinmoqda..."),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 8),
+                ListTile(
+                  leading: const Icon(Icons.chat_bubble_outline_rounded,
+                      color: AppColors.primary),
+                  title: const Text("Tarbiyachi bilan bog'lanish",
+                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                  subtitle: const Text("Xabarlar bo'limi orqali yozish",
+                      style: TextStyle(fontSize: 12)),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                  tileColor: const Color(0xFFF8FAFC),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ChatScreen()),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showPrivacyPolicy() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => DraggableScrollableSheet(
+        initialChildSize: 0.75,
+        maxChildSize: 0.9,
+        minChildSize: 0.5,
+        expand: false,
+        builder: (_, scrollController) => Padding(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE2E8F0),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Maxfiylik siyosati",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.darkText,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded,
+                        color: AppColors.grayText),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: ListView(
+                  controller: scrollController,
+                  physics: const BouncingScrollPhysics(),
+                  children: const [
+                    Text(
+                      "Humo Kids ilovasi orqali bolalaringizning shaxsiy ma'lumotlari, salomatligi va oilaviy xavfsizligini ta'minlash bizning ustuvor vazifamizdir.",
+                      style: TextStyle(
+                          fontSize: 13, height: 1.5, color: Color(0xFF334155)),
+                    ),
+                    SizedBox(height: 14),
+                    Text(
+                      "1. Ma'lumotlarni yig'ish va saqlash",
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                    ),
+                    SizedBox(height: 6),
+                    Text(
+                      "Ilovada faqat bog'cha bilan o'zaro hamkorlik, ta'lim-tarbiya jarayoni va to'lovlarni boshqarish uchun zarur bo'lgan ma'lumotlar qayta ishlanadi. Barcha shaxsiy ma'lumotlar shifrlangan holatda saqlanadi.",
+                      style: TextStyle(
+                          fontSize: 13, height: 1.5, color: Color(0xFF334155)),
+                    ),
+                    SizedBox(height: 14),
+                    Text(
+                      "2. Foto va video yozuvlar",
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                    ),
+                    SizedBox(height: 6),
+                    Text(
+                      "Farzandingizning mashg'ulotlar jarayonidagi fotosuratlari faqatgina uning qonuniy vakillariga (ota-onalariga) ko'rinadi va begonalarga uzatilmaydi.",
+                      style: TextStyle(
+                          fontSize: 13, height: 1.5, color: Color(0xFF334155)),
+                    ),
+                    SizedBox(height: 14),
+                    Text(
+                      "3. To'lov xavfsizligi",
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                    ),
+                    SizedBox(height: 6),
+                    Text(
+                      "Bank kartalari ma'lumotlari xalqaro PCI DSS xavfsizlik standartlariga muvofiq qayta ishlanadi. CVV kodlari tizimda saqlanmaydi.",
+                      style: TextStyle(
+                          fontSize: 13, height: 1.5, color: Color(0xFF334155)),
+                    ),
+                    SizedBox(height: 24),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: const Text("Tushunarli",
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.w700)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +713,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 // ── Header ──
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 20,
+                  ),
                   child: const Text(
                     "Mening profilim",
                     style: TextStyle(
@@ -50,6 +737,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: const Color(0xFFEDF2F7)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.02),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: Row(
                       children: [
@@ -57,8 +751,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           radius: 26,
                           backgroundColor: const Color(0xFFEFF6FF),
                           child: Text(
-                            'DA',
-                            style: TextStyle(
+                            _userName
+                                .split(' ')
+                                .take(2)
+                                .map((e) => e.isNotEmpty ? e[0] : '')
+                                .join(),
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w800,
                               color: AppColors.primary,
@@ -69,19 +767,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
+                            children: [
                               Text(
-                                "Dilnoza Abdullayeva",
-                                style: TextStyle(
+                                _userName,
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w800,
                                   color: AppColors.darkText,
                                 ),
                               ),
-                              SizedBox(height: 3),
+                              const SizedBox(height: 3),
                               Text(
-                                "+998 90 123 45 67",
-                                style: TextStyle(
+                                _userPhone,
+                                style: const TextStyle(
                                   fontSize: 13,
                                   color: AppColors.grayText,
                                 ),
@@ -90,21 +788,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                    "Ma'lumotlarni tahrirlash tez kunda..."),
-                                duration: Duration(seconds: 1),
-                              ),
-                            );
-                          },
+                          onTap: _editProfile,
                           child: const Text(
-                            "Ma'lumotlarni tahrirlash →",
+                            "Tahrirlash →",
                             style: TextStyle(
                               fontSize: 12,
                               color: AppColors.primary,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
@@ -134,7 +824,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         bgColor: const Color(0xFFE5EFFF),
                         textColor: AppColors.primary,
                         name: 'Amirbek',
-                        info: '5 yosh · 1-guruh · Quyoshchalar',
+                        info: '5 yosh · 1-guruh · «Quyoshchalar»',
+                        onTap: () => _showChildDetails(
+                          name: 'Amirbek',
+                          group: '1-guruh «Quyoshchalar»',
+                          age: '5 yosh',
+                          teacher: 'Mohira Karimova',
+                          attendance: '96% (22/23 kun)',
+                          color: AppColors.primary,
+                          initial: 'A',
+                        ),
                       ),
                       const SizedBox(height: 8),
                       _ChildTile(
@@ -142,7 +841,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         bgColor: const Color(0xFFF3E8FF),
                         textColor: const Color(0xFF7C3AED),
                         name: 'Yasmina',
-                        info: '3 yosh · 2-guruh · Yulduzchalar',
+                        info: '3 yosh · 2-guruh · «Yulduzchalar»',
+                        onTap: () => _showChildDetails(
+                          name: 'Yasmina',
+                          group: '2-guruh «Yulduzchalar»',
+                          age: '3 yosh',
+                          teacher: 'Sevara Rasulova',
+                          attendance: '100% (23/23 kun)',
+                          color: const Color(0xFF7C3AED),
+                          initial: 'Y',
+                        ),
                       ),
                     ],
                   ),
@@ -165,21 +873,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(height: 10),
 
-                      // Bildirishnomalar toggle
+                      // Bildirishnomalar toggle & navigation
                       _SettingsTile(
                         icon: Icons.notifications_none_rounded,
                         iconBg: const Color(0xFFEFF6FF),
                         iconColor: AppColors.primary,
                         title: "Bildirishnomalar",
                         subtitle: "Kunlik hisobot, xabar va to'lovlar",
-                        trailing: Switch(
+                        trailing: Switch.adaptive(
                           value: _notificationsEnabled,
-                          onChanged: (v) =>
-                              setState(() => _notificationsEnabled = v),
-                          activeColor: AppColors.primary,
+                          activeTrackColor: AppColors.primary,
+                          activeThumbColor: Colors.white,
+                          onChanged: (v) {
+                            HapticFeedback.lightImpact();
+                            setState(() => _notificationsEnabled = v);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(v
+                                    ? "Bildirishnomalar yoqildi"
+                                    : "Bildirishnomalar o'chirildi"),
+                                duration: const Duration(milliseconds: 900),
+                              ),
+                            );
+                          },
                         ),
-                        onTap: () =>
-                            setState(() => _notificationsEnabled = !_notificationsEnabled),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const NotificationsScreen(),
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(height: 8),
 
@@ -212,14 +937,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         iconColor: AppColors.primary,
                         title: "Face ID orqali kirish",
                         subtitle: "Faqat shu qurilmada",
-                        trailing: Switch(
+                        trailing: Switch.adaptive(
                           value: _faceIdEnabled,
-                          onChanged: (v) =>
-                              setState(() => _faceIdEnabled = v),
-                          activeColor: AppColors.primary,
+                          activeTrackColor: AppColors.primary,
+                          activeThumbColor: Colors.white,
+                          onChanged: (v) {
+                            HapticFeedback.lightImpact();
+                            setState(() => _faceIdEnabled = v);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(v
+                                    ? "Face ID / Biometrik kirish faollashtirildi"
+                                    : "Face ID kirish o'chirildi"),
+                                duration: const Duration(milliseconds: 900),
+                              ),
+                            );
+                          },
                         ),
-                        onTap: () =>
-                            setState(() => _faceIdEnabled = !_faceIdEnabled),
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          setState(() => _faceIdEnabled = !_faceIdEnabled);
+                        },
                       ),
                     ],
                   ),
@@ -251,23 +989,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         subtitle: null,
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: const [
+                          children: [
                             Text(
-                              "O'zbekcha",
-                              style: TextStyle(
+                              _selectedLanguage,
+                              style: const TextStyle(
                                 fontSize: 13,
                                 color: AppColors.grayText,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                            SizedBox(width: 4),
-                            Icon(
+                            const SizedBox(width: 4),
+                            const Icon(
                               Icons.chevron_right_rounded,
                               color: AppColors.grayText,
                             ),
                           ],
                         ),
-                        onTap: () {},
+                        onTap: _chooseLanguage,
                       ),
                       const SizedBox(height: 8),
 
@@ -277,20 +1015,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         iconBg: const Color(0xFFEFF6FF),
                         iconColor: AppColors.primary,
                         title: "Qo'llab-quvvatlash",
-                        subtitle: null,
+                        subtitle: "Aloqa va yordam markazi",
                         trailing: const Icon(
                           Icons.chevron_right_rounded,
                           color: AppColors.grayText,
                         ),
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                  "Qo'llab-quvvatlash chat tez kunda ishga tushadi!"),
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
-                        },
+                        onTap: _showSupport,
                       ),
                       const SizedBox(height: 8),
 
@@ -300,20 +1030,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         iconBg: const Color(0xFFF1F5F9),
                         iconColor: const Color(0xFF475569),
                         title: "Maxfiylik siyosati",
-                        subtitle: null,
+                        subtitle: "Xavfsizlik va ma'lumotlar himoyasi",
                         trailing: const Icon(
                           Icons.chevron_right_rounded,
                           color: AppColors.grayText,
                         ),
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content:
-                                  Text("Maxfiylik siyosati sahifasi ochilmoqda..."),
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
-                        },
+                        onTap: _showPrivacyPolicy,
                       ),
                     ],
                   ),
@@ -377,7 +1099,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         onPressed: () => Navigator.pop(ctx),
                                         style: OutlinedButton.styleFrom(
                                           padding: const EdgeInsets.symmetric(
-                                              vertical: 12),
+                                            vertical: 12,
+                                          ),
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(12),
@@ -465,7 +1188,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       "Humo Kids · 1.0.0 · Mehr bilan yaratilgan",
                       style: TextStyle(
                         fontSize: 11,
-                        color: AppColors.grayText.withOpacity(0.6),
+                        color: AppColors.grayText.withValues(alpha: 0.6),
                       ),
                     ),
                   ),
@@ -486,6 +1209,7 @@ class _ChildTile extends StatelessWidget {
     required this.textColor,
     required this.name,
     required this.info,
+    required this.onTap,
   });
 
   final String initial;
@@ -493,60 +1217,64 @@ class _ChildTile extends StatelessWidget {
   final Color textColor;
   final String name;
   final String info;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFEDF2F7)),
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: bgColor,
-            child: Text(
-              initial,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
-                color: textColor,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFEDF2F7)),
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 18,
+              backgroundColor: bgColor,
+              child: Text(
+                initial,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: textColor,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.darkText,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.darkText,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  info,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.grayText,
+                  const SizedBox(height: 2),
+                  Text(
+                    info,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.grayText,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const Icon(
-            Icons.chevron_right_rounded,
-            color: AppColors.grayText,
-            size: 20,
-          ),
-        ],
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.grayText,
+              size: 20,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -626,4 +1354,3 @@ class _SettingsTile extends StatelessWidget {
     );
   }
 }
-

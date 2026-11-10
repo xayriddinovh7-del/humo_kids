@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:humo_kids/core/constants/app_colors.dart';
 import 'package:humo_kids/shared/widgets/humo_logo.dart';
 import 'package:humo_kids/features/home/screens/daily_report_screen.dart';
 import 'package:humo_kids/features/home/screens/food_details_screen.dart';
 import 'package:humo_kids/features/home/screens/moments_gallery_screen.dart';
+import 'package:humo_kids/features/notifications/screens/notifications_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, this.onNavigateToPayments});
@@ -38,35 +40,52 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const HumoLogo(iconSize: 22, fontSize: 18),
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
-                        ),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            const Icon(
-                              Icons.notifications_none_rounded,
-                              color: AppColors.darkText,
-                              size: 22,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const NotificationsScreen(),
                             ),
-                            Positioned(
-                              top: 8,
-                              right: 8,
-                              child: Container(
-                                width: 8,
-                                height: 8,
-                                decoration: const BoxDecoration(
-                                  color: Colors.red,
-                                  shape: BoxShape.circle,
+                          );
+                        },
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: const Color(0xFFE2E8F0)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.03),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              const Icon(
+                                Icons.notifications_none_rounded,
+                                color: AppColors.darkText,
+                                size: 22,
+                              ),
+                              Positioned(
+                                top: 8,
+                                right: 8,
+                                child: Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -106,16 +125,24 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: _ChildTab(
                             name: 'Amirbek',
                             isSelected: _isAmirbek,
-                            onTap: () =>
-                                setState(() => _selectedChildIndex = 0),
+                            onTap: () {
+                              if (!_isAmirbek) {
+                                HapticFeedback.selectionClick();
+                                setState(() => _selectedChildIndex = 0);
+                              }
+                            },
                           ),
                         ),
                         Expanded(
                           child: _ChildTab(
                             name: 'Yasmina',
                             isSelected: !_isAmirbek,
-                            onTap: () =>
-                                setState(() => _selectedChildIndex = 1),
+                            onTap: () {
+                              if (_isAmirbek) {
+                                HapticFeedback.selectionClick();
+                                setState(() => _selectedChildIndex = 1);
+                              }
+                            },
                           ),
                         ),
                       ],
@@ -152,6 +179,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           bg: const Color(0xFFEFF6FF),
                           value: _isAmirbek ? '36,6 °C' : '36,5 °C',
                           label: 'Harorat',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => DailyReportScreen(
+                                  childName: _isAmirbek ? 'Amirbek' : 'Yasmina',
+                                  group: _isAmirbek ? '1-guruh' : '2-guruh',
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -162,6 +200,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           bg: const Color(0xFFE8F8EE),
                           value: _isAmirbek ? 'Quvnoq' : 'Xotirjam',
                           label: 'Kayfiyat',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => DailyReportScreen(
+                                  childName: _isAmirbek ? 'Amirbek' : 'Yasmina',
+                                  group: _isAmirbek ? '1-guruh' : '2-guruh',
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -251,7 +300,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 12),
 
                   // Daily Timeline Card
-                  Container(
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => DailyReportScreen(
+                            childName: _isAmirbek ? 'Amirbek' : 'Yasmina',
+                            group: _isAmirbek ? '1-guruh' : '2-guruh',
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -377,6 +438,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
+                ),
                   const SizedBox(height: 24),
 
                   // Section: Kichik lahzalar

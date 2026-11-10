@@ -107,6 +107,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       return TextField(
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (_) {
+                          if (_isValid) _onContinue();
+                        },
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,

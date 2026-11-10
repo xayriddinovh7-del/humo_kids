@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:humo_kids/core/constants/app_colors.dart';
 import 'package:humo_kids/features/home/screens/main_shell_screen.dart';
 import 'package:humo_kids/features/payments/screens/payment_receipt_screen.dart';
+import 'package:humo_kids/features/messages/screens/chat_screen.dart';
 
 class PaymentErrorScreen extends StatelessWidget {
   const PaymentErrorScreen({
@@ -48,7 +49,7 @@ class PaymentErrorScreen extends StatelessWidget {
                             border: Border.all(color: const Color(0xFFE2E8F0)),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.03),
+                                color: Colors.black.withValues(alpha: 0.03),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
@@ -444,14 +445,14 @@ class PaymentErrorScreen extends StatelessWidget {
                                     const SizedBox(height: 8),
                                     GestureDetector(
                                       onTap: () {
-                                        ScaffoldMessenger.of(
+                                        Navigator.push(
                                           context,
-                                        ).showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              "Bog'cha qo'llab-quvvatlash operatori bilan chat ochilmoqda...",
+                                          MaterialPageRoute(
+                                            builder: (_) => const ChatScreen(
+                                              name: "Humo Kids yordam",
+                                              role: "Qo'llab-quvvatlash xizmati",
+                                              subject: "To'lov xatosi bo'yicha yordam",
                                             ),
-                                            backgroundColor: AppColors.primary,
                                           ),
                                         );
                                       },
@@ -493,7 +494,7 @@ class PaymentErrorScreen extends StatelessWidget {
                     color: Colors.white,
                     border: Border(
                       top: BorderSide(
-                        color: Colors.black.withOpacity(0.06),
+                        color: Colors.black.withValues(alpha: 0.06),
                         width: 1,
                       ),
                     ),

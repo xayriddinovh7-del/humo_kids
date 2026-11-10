@@ -18,6 +18,84 @@ class MomentsGalleryScreen extends StatefulWidget {
 class _MomentsGalleryScreenState extends State<MomentsGalleryScreen> {
   int _selectedFilter = 0; // 0: Barchasi, 1: Mashg'ulotlar, 2: Sayr
 
+  void _openPhotoPreview(String imageUrl, String title) {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: IconButton(
+                icon: const Icon(Icons.close_rounded,
+                    color: Colors.white, size: 28),
+                onPressed: () => Navigator.pop(ctx),
+              ),
+            ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                color: Colors.black,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    InteractiveViewer(
+                      child: Image.network(
+                        imageUrl,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Container(
+                          height: 240,
+                          color: const Color(0xFFE2E8F0),
+                          child: const Icon(Icons.photo,
+                              color: AppColors.primary, size: 48),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      color: Colors.white,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              title,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.darkText,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.file_download_outlined,
+                                color: AppColors.primary),
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Surat qurilmaga saqlandi!"),
+                                  duration: Duration(seconds: 1),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,38 +170,41 @@ class _MomentsGalleryScreenState extends State<MomentsGalleryScreen> {
                   const SizedBox(height: 16),
 
                   // Filter Pills: Barchasi, Mashg'ulotlar, Sayr
-                  Row(
-                    children: [
-                      _FilterPill(
-                        label: 'Barchasi',
-                        isSelected: _selectedFilter == 0,
-                        selectedBg: AppColors.primary,
-                        selectedColor: Colors.white,
-                        unselectedBg: const Color(0xFFEDF2F7),
-                        unselectedColor: AppColors.grayText,
-                        onTap: () => setState(() => _selectedFilter = 0),
-                      ),
-                      const SizedBox(width: 8),
-                      _FilterPill(
-                        label: "Mashg'ulotlar",
-                        isSelected: _selectedFilter == 1,
-                        selectedBg: const Color(0xFF7C3AED),
-                        selectedColor: Colors.white,
-                        unselectedBg: const Color(0xFFF3E8FF),
-                        unselectedColor: const Color(0xFF7C3AED),
-                        onTap: () => setState(() => _selectedFilter = 1),
-                      ),
-                      const SizedBox(width: 8),
-                      _FilterPill(
-                        label: 'Sayr',
-                        isSelected: _selectedFilter == 2,
-                        selectedBg: const Color(0xFF16A34A),
-                        selectedColor: Colors.white,
-                        unselectedBg: const Color(0xFFE8F8EE),
-                        unselectedColor: const Color(0xFF16A34A),
-                        onTap: () => setState(() => _selectedFilter = 2),
-                      ),
-                    ],
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _FilterPill(
+                          label: 'Barchasi',
+                          isSelected: _selectedFilter == 0,
+                          selectedBg: AppColors.primary,
+                          selectedColor: Colors.white,
+                          unselectedBg: const Color(0xFFEDF2F7),
+                          unselectedColor: AppColors.grayText,
+                          onTap: () => setState(() => _selectedFilter = 0),
+                        ),
+                        const SizedBox(width: 8),
+                        _FilterPill(
+                          label: "Mashg'ulotlar",
+                          isSelected: _selectedFilter == 1,
+                          selectedBg: const Color(0xFF7C3AED),
+                          selectedColor: Colors.white,
+                          unselectedBg: const Color(0xFFF3E8FF),
+                          unselectedColor: const Color(0xFF7C3AED),
+                          onTap: () => setState(() => _selectedFilter = 1),
+                        ),
+                        const SizedBox(width: 8),
+                        _FilterPill(
+                          label: 'Sayr',
+                          isSelected: _selectedFilter == 2,
+                          selectedBg: const Color(0xFF16A34A),
+                          selectedColor: Colors.white,
+                          unselectedBg: const Color(0xFFE8F8EE),
+                          unselectedColor: const Color(0xFF16A34A),
+                          onTap: () => setState(() => _selectedFilter = 2),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 20),
 
@@ -131,14 +212,17 @@ class _MomentsGalleryScreenState extends State<MomentsGalleryScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
-                      Text(
-                        'Bugun · 23-oktabr',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.darkText,
+                      Flexible(
+                        child: Text(
+                          'Bugun · 23-oktabr',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.darkText,
+                          ),
                         ),
                       ),
+                      SizedBox(width: 8),
                       Text(
                         '6 ta surat',
                         style: TextStyle(
@@ -168,20 +252,26 @@ class _MomentsGalleryScreenState extends State<MomentsGalleryScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ClipRRect(
-                          borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(20)),
-                          child: SizedBox(
-                            height: 200,
-                            width: double.infinity,
-                            child: Image.network(
-                              'https://images.unsplash.com/photo-1577896851231-70ef18881754?w=700&auto=format&fit=crop&q=80',
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Container(
-                                color: const Color(0xFFE2E8F0),
-                                child: const Icon(Icons.photo,
-                                    color: AppColors.primary),
+                        GestureDetector(
+                          onTap: () => _openPhotoPreview(
+                            'https://images.unsplash.com/photo-1577896851231-70ef18881754?w=700&auto=format&fit=crop&q=80',
+                            'Kuz ranglarini kashf etdik',
+                          ),
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(20)),
+                            child: SizedBox(
+                              height: 200,
+                              width: double.infinity,
+                              child: Image.network(
+                                'https://images.unsplash.com/photo-1577896851231-70ef18881754?w=700&auto=format&fit=crop&q=80',
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                  color: const Color(0xFFE2E8F0),
+                                  child: const Icon(Icons.photo,
+                                      color: AppColors.primary),
+                                ),
                               ),
                             ),
                           ),
@@ -191,26 +281,30 @@ class _MomentsGalleryScreenState extends State<MomentsGalleryScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
-                                  Text(
-                                    'Kuz ranglarini kashf etdik',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.darkText,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: const [
+                                    Text(
+                                      'Kuz ranglarini kashf etdik',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColors.darkText,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(height: 2),
-                                  Text(
-                                    '1-guruh · Mohira opa · 10:45',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: AppColors.grayText,
+                                    SizedBox(height: 2),
+                                    Text(
+                                      '1-guruh · Mohira opa · 10:45',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: AppColors.grayText,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                               IconButton(
                                 icon: const Icon(Icons.file_download_outlined,
@@ -241,6 +335,10 @@ class _MomentsGalleryScreenState extends State<MomentsGalleryScreen> {
                           imageUrl:
                               'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=400&auto=format&fit=crop&q=80',
                           caption: 'Birga quramiz · 10:15',
+                          onTap: () => _openPhotoPreview(
+                            'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=400&auto=format&fit=crop&q=80',
+                            'Birga quramiz · 10:15',
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -249,6 +347,10 @@ class _MomentsGalleryScreenState extends State<MomentsGalleryScreen> {
                           imageUrl:
                               'https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&auto=format&fit=crop&q=80',
                           caption: 'Kuzgi sayr · 11:00',
+                          onTap: () => _openPhotoPreview(
+                            'https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&auto=format&fit=crop&q=80',
+                            'Kuzgi sayr · 11:00',
+                          ),
                         ),
                       ),
                     ],
@@ -259,14 +361,17 @@ class _MomentsGalleryScreenState extends State<MomentsGalleryScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
-                      Text(
-                        'Kecha · 22-oktabr',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.darkText,
+                      Flexible(
+                        child: Text(
+                          'Kecha · 22-oktabr',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.darkText,
+                          ),
                         ),
                       ),
+                      SizedBox(width: 8),
                       Text(
                         '4 ta surat',
                         style: TextStyle(
@@ -287,6 +392,10 @@ class _MomentsGalleryScreenState extends State<MomentsGalleryScreen> {
                           imageUrl:
                               'https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&auto=format&fit=crop&q=80',
                           caption: 'Kuzgi sayr · 10:40',
+                          onTap: () => _openPhotoPreview(
+                            'https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&auto=format&fit=crop&q=80',
+                            'Kuzgi sayr · 10:40',
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -295,6 +404,10 @@ class _MomentsGalleryScreenState extends State<MomentsGalleryScreen> {
                           imageUrl:
                               'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=400&auto=format&fit=crop&q=80',
                           caption: 'Konstruktor · 11:20',
+                          onTap: () => _openPhotoPreview(
+                            'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=400&auto=format&fit=crop&q=80',
+                            'Konstruktor · 11:20',
+                          ),
                         ),
                       ),
                     ],
@@ -390,50 +503,55 @@ class _GridPhotoCard extends StatelessWidget {
   const _GridPhotoCard({
     required this.imageUrl,
     required this.caption,
+    this.onTap,
   });
 
   final String imageUrl;
   final String caption;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFEDF2F7)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(16)),
-            child: SizedBox(
-              height: 130,
-              width: double.infinity,
-              child: Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: const Color(0xFFE2E8F0),
-                  child: const Icon(Icons.photo, color: AppColors.primary),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFEDF2F7)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16)),
+              child: SizedBox(
+                height: 130,
+                width: double.infinity,
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: const Color(0xFFE2E8F0),
+                    child: const Icon(Icons.photo, color: AppColors.primary),
+                  ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            child: Text(
-              caption,
-              style: const TextStyle(
-                fontSize: 11,
-                color: AppColors.grayText,
-                fontWeight: FontWeight.w500,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              child: Text(
+                caption,
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: AppColors.grayText,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

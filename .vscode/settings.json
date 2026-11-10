@@ -1,0 +1,6 @@
+{
+  "dart.flutterSdkPath": "/opt/homebrew/share/flutter",
+  "editor.codeLens": true,
+  "dart.enableSdkFormatter": true
+}
+

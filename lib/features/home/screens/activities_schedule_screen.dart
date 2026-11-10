@@ -58,7 +58,9 @@ class ActivitiesScheduleScreen extends StatelessWidget {
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFFEBF2FF),
                           borderRadius: BorderRadius.circular(20),
@@ -137,8 +139,9 @@ class ActivitiesScheduleScreen extends StatelessWidget {
                           child: const LinearProgressIndicator(
                             value: 4 / 5,
                             backgroundColor: Color(0xFFEFF4FF),
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(AppColors.primary),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppColors.primary,
+                            ),
                             minHeight: 6,
                           ),
                         ),
@@ -151,23 +154,19 @@ class ActivitiesScheduleScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        "23-oktabr, juma",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.darkText,
+                      const Flexible(
+                        child: Text(
+                          "23-oktabr, juma",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.darkText,
+                          ),
                         ),
                       ),
+                      const SizedBox(width: 8),
                       GestureDetector(
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Haftalik jadval yangilanmoqda..."),
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
-                        },
+                        onTap: () => _showWeeklySchedule(context),
                         child: const Text(
                           "Haftalik jadval",
                           style: TextStyle(
@@ -258,7 +257,8 @@ class ActivitiesScheduleScreen extends StatelessWidget {
                       children: [
                         ClipRRect(
                           borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(20)),
+                            top: Radius.circular(20),
+                          ),
                           child: SizedBox(
                             height: 160,
                             width: double.infinity,
@@ -267,10 +267,12 @@ class ActivitiesScheduleScreen extends StatelessWidget {
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) =>
                                   Container(
-                                color: const Color(0xFFE2E8F0),
-                                child: const Icon(Icons.photo,
-                                    color: AppColors.primary),
-                              ),
+                                    color: const Color(0xFFE2E8F0),
+                                    child: const Icon(
+                                      Icons.photo,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
                             ),
                           ),
                         ),
@@ -292,6 +294,104 @@ class ActivitiesScheduleScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                 ],
               ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showWeeklySchedule(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(ctx).size.height * 0.85,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE2E8F0),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "Haftalik jadval ($group)",
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.darkText,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.close_rounded,
+                        color: AppColors.grayText,
+                      ),
+                      onPressed: () => Navigator.pop(ctx),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: ListView(
+                    physics: const BouncingScrollPhysics(),
+                    children: const [
+                      _DayScheduleTile(
+                        day: "Dushanba",
+                        title: "Musiqa va ritmika",
+                        time: "09:30 - 10:15",
+                        teacher: "Aziza opa",
+                      ),
+                      _DayScheduleTile(
+                        day: "Seshanba",
+                        title: "Rasm chizish va loy",
+                        time: "09:30 - 10:20",
+                        teacher: "Mohira opa",
+                      ),
+                      _DayScheduleTile(
+                        day: "Chorshanba",
+                        title: "Ingliz tili (Kids English)",
+                        time: "10:00 - 10:45",
+                        teacher: "Madina opa",
+                      ),
+                      _DayScheduleTile(
+                        day: "Payshanba",
+                        title: "Jismoniy tarbiya",
+                        time: "09:30 - 10:15",
+                        teacher: "Rustam aka",
+                      ),
+                      _DayScheduleTile(
+                        day: "Juma",
+                        title: "Matematika va mantiq",
+                        time: "09:30 - 10:20",
+                        teacher: "Mohira opa",
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -403,3 +503,72 @@ class _ActivityCard extends StatelessWidget {
   }
 }
 
+class _DayScheduleTile extends StatelessWidget {
+  const _DayScheduleTile({
+    required this.day,
+    required this.title,
+    required this.time,
+    required this.teacher,
+  });
+
+  final String day;
+  final String title;
+  final String time;
+  final String teacher;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFEDF2F7)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.lightBlueBg,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              day,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: AppColors.primary,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.darkText,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  "$time · $teacher",
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.grayText,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:humo_kids/core/constants/app_colors.dart';
+import 'package:humo_kids/features/messages/screens/chat_screen.dart';
 
 class FoodDetailsScreen extends StatelessWidget {
   const FoodDetailsScreen({
@@ -85,34 +86,48 @@ class FoodDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   // Allergy info card
-                  Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF9EB),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFFDE68A)),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(
-                          Icons.shield_outlined,
-                          color: Color(0xFFD97706),
-                          size: 20,
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            "$childName da qayd etilgan allergiya yo'q. Ma'lumot o'zgarsa, tarbiyachiga yozing.",
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Color(0xFF92400E),
-                              height: 1.4,
-                              fontWeight: FontWeight.w500,
-                            ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ChatScreen(
+                            name: 'Mohira Karimova',
+                            role: '1-guruh tarbiyachisi',
+                            subject: 'Taomnoma va allergiya',
                           ),
                         ),
-                      ],
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF9EB),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFFDE68A)),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.shield_outlined,
+                            color: Color(0xFFD97706),
+                            size: 20,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              "$childName da qayd etilgan allergiya yo'q. Ma'lumot o'zgarsa, tarbiyachiga yozing →",
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF92400E),
+                                height: 1.4,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:humo_kids/core/constants/app_colors.dart';
 import 'package:humo_kids/shared/widgets/app_button.dart';
-import 'package:humo_kids/shared/widgets/humo_logo.dart';
 import 'package:humo_kids/features/auth/screens/login_screen.dart';
 import 'package:humo_kids/features/security/screens/pin_login_screen.dart';
 
@@ -66,24 +65,12 @@ class WelcomeScreen extends StatelessWidget {
                             ],
                           ),
                           alignment: Alignment.center,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: const [
-                              HumoBirdIcon(
-                                size: 40,
-                                color: Color(0xFF0F3A8A),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                'HUMO',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w900,
-                                  color: Color(0xFF0F3A8A),
-                                  letterSpacing: 1.2,
-                                ),
-                              ),
-                            ],
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                            child: Image.asset(
+                              'assets/images/humo_logo.png',
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
                         // Floating heart icon (left)
@@ -135,8 +122,9 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 18),
                   // Security badge
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: const [
                       Icon(
                         Icons.verified_user_outlined,
@@ -146,6 +134,7 @@ class WelcomeScreen extends StatelessWidget {
                       SizedBox(width: 6),
                       Text(
                         "Mehr bilan yaratilgan. Xavfsiz saqlanadi.",
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 12,
                           color: AppColors.grayText,
@@ -172,8 +161,9 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
                   // Existing account link
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       const Text(
                         "Hisobingiz bormi? ",

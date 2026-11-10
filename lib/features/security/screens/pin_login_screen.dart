@@ -104,7 +104,7 @@ class _PinLoginScreenState extends State<PinLoginScreen> {
                           ),
                           const SizedBox(height: 16),
                           const Text(
-                            "Xush kelibsiz, Dilnoza!",
+                            "Xush kelibsiz!",
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w800,

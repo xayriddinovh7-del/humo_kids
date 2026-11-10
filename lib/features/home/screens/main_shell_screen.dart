@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:humo_kids/core/constants/app_colors.dart';
 import 'package:humo_kids/features/home/screens/home_screen.dart';
 import 'package:humo_kids/features/payments/screens/payments_screen.dart';
@@ -24,7 +25,10 @@ class _MainShellScreenState extends State<MainShellScreen> {
   }
 
   void _switchTab(int index) {
-    setState(() => _currentIndex = index);
+    if (_currentIndex != index) {
+      HapticFeedback.selectionClick();
+      setState(() => _currentIndex = index);
+    }
   }
 
   @override
@@ -36,9 +40,17 @@ class _MainShellScreenState extends State<MainShellScreen> {
       const ProfileScreen(),
     ];
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      body: screens[_currentIndex],
+    return PopScope(
+      canPop: _currentIndex == 0,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (_currentIndex != 0) {
+          _switchTab(0);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF8FAFC),
+        body: screens[_currentIndex],
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -83,7 +95,8 @@ class _MainShellScreenState extends State<MainShellScreen> {
           ),
         ),
       ),
-    );
+    ),
+  );
   }
 }
 

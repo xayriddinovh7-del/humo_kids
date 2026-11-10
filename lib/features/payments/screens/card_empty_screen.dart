@@ -230,9 +230,14 @@ class CardEmptyScreen extends StatelessWidget {
                           height: 50,
                           child: ElevatedButton(
                             onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text("Payme ilovasi ochilmoqda...")),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => MyCardsScreen(
+                                    amount: amount,
+                                    month: "Oktabr uchun",
+                                  ),
+                                ),
                               );
                             },
                             style: ElevatedButton.styleFrom(
@@ -258,9 +263,14 @@ class CardEmptyScreen extends StatelessWidget {
                           height: 50,
                           child: ElevatedButton(
                             onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text("Click ilovasi ochilmoqda...")),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => MyCardsScreen(
+                                    amount: amount,
+                                    month: "Oktabr uchun",
+                                  ),
+                                ),
                               );
                             },
                             style: ElevatedButton.styleFrom(

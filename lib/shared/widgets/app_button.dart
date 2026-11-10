@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:humo_kids/core/constants/app_colors.dart';
 
 class AppButton extends StatelessWidget {
@@ -21,7 +22,12 @@ class AppButton extends StatelessWidget {
       width: double.infinity,
       height: 56,
       child: ElevatedButton(
-        onPressed: enabled ? onPressed : null,
+        onPressed: enabled && onPressed != null
+            ? () {
+                HapticFeedback.lightImpact();
+                onPressed!();
+              }
+            : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: enabled ? AppColors.primary : AppColors.border,
           foregroundColor: Colors.white,
